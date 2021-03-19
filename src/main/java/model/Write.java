@@ -10,7 +10,8 @@ import static model.Read.*;
 
 public class Write {
     //设置全局Map
-    public static Map<Integer, ServerInfo> map_ServerInfo = new HashMap<>();
+    public static ServerInfo[] serverInfo = new ServerInfo[20000];
+    //public static Map<Integer, ServerInfo> map_ServerInfo = new HashMap<>();
     public static Map<Integer, VmInfo> map_vmInfo = new HashMap<>();
 
     public static Integer server_id = 0;
@@ -33,7 +34,7 @@ public class Write {
         int server_num = 0;
         int vm_num = 0;
 
-        int i, j, num;
+        int i, j, num, m, n;
 
 
         Map<String,Vm> map_vm = Read.ReadVm();
@@ -52,7 +53,7 @@ public class Write {
 
         for (i = 0; i < list_operation.size(); i++) {
             list_by_day = list_operation.get(i);
-            System.out.println("第"+i+"天");
+//            System.out.println("第"+i+"天");
 
 
             //i代表第几天 j代表第几个操作
@@ -74,31 +75,34 @@ public class Write {
                         Integer memory = map_vm.get(list_by_day.get(j).getVm_name()).getVm_memory() / 2;
 
 
-                        if (map_ServerInfo.isEmpty()) {
+                        if (serverInfo[0] == null) {
                             BuyServer();
                             vmInfo.setServer_id(0);
                         } else {//如果map_ServerInfo中有已购买的服务器，则看服务器剩余的CPU核数和内存是否能存入虚拟机
                             //挨个遍历已有的服务器，先比较AB节点剩余内核和内存与当前虚拟机，若有余量则加入，若没有则购买
-                            for (Map.Entry<Integer, ServerInfo> entry : map_ServerInfo.entrySet()) {
+                            for (m = 0; m < server_id; m++) {
                                 //已购服务器的内核数和内存大小均大于等于map_vm中对应虚拟机的大小，则在entry中减去相应的大小
                                 //同时将存储进的服务器信息写入
-                                if (entry.getValue().getA_cpu_core() >= cpu_core && entry.getValue().getA_memory() >= memory && entry.getValue().getB_cpu_core() >= cpu_core && entry.getValue().getB_memory() >= memory) {
-                                    entry.getValue().setA_cpu_core(entry.getValue().getA_cpu_core() - cpu_core);
-                                    entry.getValue().setB_cpu_core(entry.getValue().getB_cpu_core() - cpu_core);
-                                    entry.getValue().setA_memory(entry.getValue().getA_memory() - memory);
-                                    entry.getValue().setB_memory(entry.getValue().getB_memory() - memory);
-                                    vmInfo.setServer_id(entry.getKey());
+                                if (serverInfo[m].getA_cpu_core() >= cpu_core && serverInfo[m].getA_memory() >= memory && serverInfo[m].getB_cpu_core() >= cpu_core && serverInfo[m].getB_memory() >= memory) {
+                                    serverInfo[m].setA_cpu_core(serverInfo[m].getA_cpu_core() - cpu_core);
+                                    serverInfo[m].setB_cpu_core(serverInfo[m].getB_cpu_core() - cpu_core);
+                                    serverInfo[m].setA_memory(serverInfo[m].getA_memory() - memory);
+                                    serverInfo[m].setB_memory(serverInfo[m].getB_memory() - memory);
+                                    vmInfo.setServer_id(m);
                                     break;//若满足条件跳出for循环
                                 }
                                 //若不满足条件跳出本次循环进入下一个已购买服务器
                             }
+                            /**
+                             * 有问题，第一个服务器id就是0
+                             */
                             if(vmInfo.getServer_id() == 0){
                                 //如果没有服务器满足条件则购买
                                 BuyServer();
-                                map_ServerInfo.get(server_id - 1).setA_cpu_core(map_ServerInfo.get(server_id - 1).getA_cpu_core() - cpu_core);
-                                map_ServerInfo.get(server_id - 1).setB_cpu_core(map_ServerInfo.get(server_id - 1).getB_cpu_core() - cpu_core);
-                                map_ServerInfo.get(server_id - 1).setA_memory(map_ServerInfo.get(server_id - 1).getA_memory() - memory);
-                                map_ServerInfo.get(server_id - 1).setB_memory(map_ServerInfo.get(server_id - 1).getB_memory() - memory);
+                                serverInfo[server_id - 1].setA_cpu_core(serverInfo[server_id - 1].getA_cpu_core() - cpu_core);
+                                serverInfo[server_id - 1].setB_cpu_core(serverInfo[server_id - 1].getB_cpu_core() - cpu_core);
+                                serverInfo[server_id - 1].setA_memory(serverInfo[server_id - 1].getA_memory() - memory);
+                                serverInfo[server_id - 1].setB_memory(serverInfo[server_id - 1].getB_memory() - memory);
                             }
                             /**
                              * 有问题，每次都要重新买服务器
@@ -110,26 +114,28 @@ public class Write {
                     } else {//若为单节点
                         Integer cpu_core = map_vm.get(list_by_day.get(j).getVm_name()).getVm_cpu_core();
                         Integer memory = map_vm.get(list_by_day.get(j).getVm_name()).getVm_memory();
-
-                        if (map_ServerInfo.isEmpty()) {
+                        //数组判断第一个元素是否为null从而判断是否存入元素
+                        if (serverInfo[0] == null) {
                             BuyServer();
                             vmInfo.setServer_id(0);
                         } else {//如果map_ServerInfo中有已购买的服务器，则看服务器剩余的CPU核数和内存是否能存入虚拟机
                             //挨个遍历已有的服务器，先比较AB节点剩余内核和内存与当前虚拟机，若有余量则加入，若没有则购买
-                            for (Map.Entry<Integer, ServerInfo> entry : map_ServerInfo.entrySet()) {
+                            for (n = 0; n < server_id; n++) {
                                 //已购服务器的内核数和内存大小均大于等于map_vm中对应虚拟机的大小，则在entry中减去相应的大小
                                 //同时将存储进的服务器信息写入
-                                if (entry.getValue().getA_cpu_core() >= cpu_core && entry.getValue().getA_memory() >= memory) {
-                                    entry.getValue().setA_cpu_core(entry.getValue().getA_cpu_core() - cpu_core);
-                                    entry.getValue().setA_memory(entry.getValue().getA_memory() - memory);
+                                int a = serverInfo[n].getA_memory();
+
+                                if (serverInfo[n].getA_cpu_core() >= cpu_core && serverInfo[n].getA_memory() >= memory) {
+                                    serverInfo[n].setA_cpu_core(serverInfo[n].getA_cpu_core() - cpu_core);
+                                    serverInfo[n].setA_memory(serverInfo[n].getA_memory() - memory);
                                     vmInfo.setNode("A");
-                                    vmInfo.setServer_id(entry.getKey());
+                                    vmInfo.setServer_id(n);
                                     break;//若满足条件跳出for循环
-                                } else if (entry.getValue().getB_cpu_core() >= cpu_core && entry.getValue().getB_memory() >= memory) {
-                                    entry.getValue().setB_cpu_core(entry.getValue().getB_cpu_core() - cpu_core);
-                                    entry.getValue().setB_memory(entry.getValue().getB_memory() - memory);
+                                } else if (serverInfo[n].getB_cpu_core() >= cpu_core && serverInfo[n].getB_memory() >= memory) {
+                                    serverInfo[n].setB_cpu_core(serverInfo[n].getB_cpu_core() - cpu_core);
+                                    serverInfo[n].setB_memory(serverInfo[n].getB_memory() - memory);
                                     vmInfo.setNode("B");
-                                    vmInfo.setServer_id(entry.getKey());
+                                    vmInfo.setServer_id(n);
                                     break;//若满足条件跳出for循环
                                 }
                                 //若不满足条件跳出本次循环进入下一个已购买服务器
@@ -139,8 +145,8 @@ public class Write {
                                 //如果没有服务器满足条件则购买
                                 BuyServer();
                                 //若新买服务器默认放A节点
-                                map_ServerInfo.get(server_id - 1).setA_cpu_core(map_ServerInfo.get(server_id - 1).getA_cpu_core() - cpu_core);
-                                map_ServerInfo.get(server_id - 1).setB_cpu_core(map_ServerInfo.get(server_id - 1).getB_cpu_core() - cpu_core);
+                                serverInfo[server_id - 1].setA_cpu_core(serverInfo[server_id - 1].getA_cpu_core() - cpu_core);
+                                serverInfo[server_id - 1].setB_cpu_core(serverInfo[server_id - 1].getB_cpu_core() - cpu_core);
                                 vmInfo.setNode("A");
                                 vmInfo.setServer_id(server_id - 1);
                             }
@@ -176,23 +182,22 @@ public class Write {
                         Integer cpu_core = map_vm.get(map_vmInfo.get(Integer.valueOf(list_by_day.get(j).getVm_id())).getVm_name()).getVm_cpu_core() / 2;
                         Integer memory = map_vm.get(map_vmInfo.get(Integer.valueOf(list_by_day.get(j).getVm_id())).getVm_name()).getVm_memory() / 2;
 
-
                         //Integer a = map_ServerInfo.get(serverId).getA_cpu_core();
-                        map_ServerInfo.get(serverId).setA_cpu_core(map_ServerInfo.get(serverId).getA_cpu_core() + cpu_core);
-                        map_ServerInfo.get(serverId).setB_cpu_core(map_ServerInfo.get(serverId).getB_cpu_core() + cpu_core);
-                        map_ServerInfo.get(serverId).setA_memory(map_ServerInfo.get(serverId).getA_memory() + memory);
-                        map_ServerInfo.get(serverId).setB_memory(map_ServerInfo.get(serverId).getB_memory() + memory);
+                        serverInfo[serverId].setA_cpu_core(serverInfo[serverId].getA_cpu_core() + cpu_core);
+                        serverInfo[serverId].setB_cpu_core(serverInfo[serverId].getB_cpu_core() + cpu_core);
+                        serverInfo[serverId].setA_memory(serverInfo[serverId].getA_memory() + memory);
+                        serverInfo[serverId].setB_memory(serverInfo[serverId].getB_memory() + memory);
 
                     } else {//若为单节点
                         Integer cpu_core = map_vm.get(map_vmInfo.get(Integer.valueOf(list_by_day.get(j).getVm_id())).getVm_name()).getVm_cpu_core();
                         Integer memory = map_vm.get(map_vmInfo.get(Integer.valueOf(list_by_day.get(j).getVm_id())).getVm_name()).getVm_memory();
 
                         if (map_vmInfo.get(Integer.valueOf(list_by_day.get(j).getVm_id())).getNode().equals("A")) {
-                            map_ServerInfo.get(serverId).setA_cpu_core(map_ServerInfo.get(serverId).getA_cpu_core() + cpu_core);
-                            map_ServerInfo.get(serverId).setA_memory(map_ServerInfo.get(serverId).getA_memory() + memory);
+                            serverInfo[serverId].setA_cpu_core(serverInfo[serverId].getA_cpu_core() + cpu_core);
+                            serverInfo[serverId].setA_memory(serverInfo[serverId].getA_memory() + memory);
                         } else {
-                            map_ServerInfo.get(serverId).setB_cpu_core(map_ServerInfo.get(serverId).getB_cpu_core() + cpu_core);
-                            map_ServerInfo.get(serverId).setB_memory(map_ServerInfo.get(serverId).getB_memory() + memory);
+                            serverInfo[serverId].setB_cpu_core(serverInfo[serverId].getB_cpu_core() + cpu_core);
+                            serverInfo[serverId].setB_memory(serverInfo[serverId].getB_memory() + memory);
                         }
 
                     }
@@ -204,8 +209,8 @@ public class Write {
             /**
              * 先判断第i天是否购买了服务器,若买了则买 server_num_now 台
              */
-            int server_num_now = map_ServerInfo.size() - server_num;
-            server_num = map_ServerInfo.size();
+            int server_num_now = serverInfo.length - server_num;
+            server_num =serverInfo.length;
             if(server_num_now == 0){
                 System.out.println("(purchase,0)");
             }else{
@@ -262,26 +267,23 @@ public class Write {
 
 
 
-
-
-
     /**
      * 购买服务器策略
      */
     public static void BuyServer() throws IOException{
 
         Map<String,Server> map_server = ReadServer();
-        ServerInfo serverInfo = new ServerInfo();
+        ServerInfo server = new ServerInfo();
         //暂时默认买第一种服务器
-        serverInfo.setServer_name(map_server.keySet().iterator().next());
+        server.setServer_name(map_server.keySet().iterator().next());
 
-        serverInfo.setA_cpu_core(map_server.get(map_server.keySet().iterator().next()).getCpu_core() / 2);
-        serverInfo.setA_memory(map_server.get(map_server.keySet().iterator().next()).getMemory() / 2);
-        serverInfo.setB_cpu_core(map_server.get(map_server.keySet().iterator().next()).getCpu_core() / 2);
-        serverInfo.setB_memory(map_server.get(map_server.keySet().iterator().next()).getMemory() / 2);
-        serverInfo.setStatus(false);//默认没有开启使用
+        server.setA_cpu_core(map_server.get(map_server.keySet().iterator().next()).getCpu_core() / 2);
+        server.setA_memory(map_server.get(map_server.keySet().iterator().next()).getMemory() / 2);
+        server.setB_cpu_core(map_server.get(map_server.keySet().iterator().next()).getCpu_core() / 2);
+        server.setB_memory(map_server.get(map_server.keySet().iterator().next()).getMemory() / 2);
+        server.setStatus(false);//默认没有开启使用
 
-        map_ServerInfo.put(server_id,serverInfo);
+        serverInfo[server_id] = server;
         server_id++;
 
     }
