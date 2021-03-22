@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class Read {
 
-    public final static String path = "C:\\Users\\11931\\Desktop\\华为软挑\\training-1.txt";
+    public final static String path = "C:\\Users\\11931\\Desktop\\华为软挑\\training-2.txt";
 
     /**
      * 读取服务器信息
@@ -29,23 +29,34 @@ public class Read {
         //80 800
         int kinds_server = Integer.parseInt((String)lines.get(0));
 
-
+        Server1[] server1s = new Server1[kinds_server];
 
         Map<String,Server> map = new HashMap<String,Server>(kinds_server);
-
-        //向list_server中存服务器数据
+        Server1 server1 = new Server1();
         for(int i = 0; i < kinds_server; i++){
-            Server server = new Server();
+
             String string = (String) lines.get(i + 1);
             String subString = string.substring(1,string.length() - 1);
             String[] splitString = subString.split(",");
-//            server.setServer_name(splitString[0]);
-            server.setCpu_core(Integer.parseInt(splitString[1].trim()));
-            server.setMemory(Integer.parseInt(splitString[2].trim()));
-            server.setCost_hardware(Integer.parseInt(splitString[3].trim()));
-            server.setCost_energy(Integer.parseInt(splitString[4].trim()));
-            map.put(splitString[0],server);
+            server1.setServer_name(splitString[0]);
+            server1.setCpu_core(Integer.parseInt(splitString[1].trim()));
+            server1.setMemory(Integer.parseInt(splitString[2].trim()));
+            server1.setCost_hardware(Integer.parseInt(splitString[3].trim()));
+            server1.setCost_energy(Integer.parseInt(splitString[4].trim()));
+            server1s[i] = server1;
         }
+        Arrays.sort(server1s);
+        //存服务器数据
+        Server server = new Server();
+        for(int j = 0; j < kinds_server; j++){
+//            server.setServer_name(splitString[0]);
+            server.setCpu_core(server1s[j].getCpu_core());
+            server.setMemory(server1s[j].getMemory());
+            server.setCost_hardware(server1s[j].getCost_hardware());
+            server.setCost_energy(server1s[j].getCost_energy());
+            map.put(server1s[j].getServer_name(),server);
+        }
+
         return map;
     }
 

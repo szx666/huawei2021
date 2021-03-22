@@ -13,6 +13,7 @@ public class Write {
     public static ServerInfo[] serverInfo = new ServerInfo[20000];
     //public static Map<Integer, ServerInfo> map_ServerInfo = new HashMap<>();
     public static Map<Integer, VmInfo> map_vmInfo = new HashMap<>();
+    public static Map<String,Server> map_server = new HashMap<>();
 
     public static Integer server_id = 0;
     //public static Integer vm_id = 0;
@@ -36,7 +37,7 @@ public class Write {
 
         int i, j, num, m, n;
 
-
+        map_server = Read.ReadServer();
         Map<String,Vm> map_vm = Read.ReadVm();
         List<List<Operation>> list_operation = ReadOperation();
         //储存了800天的操作，每天的操作数如何获取
@@ -50,14 +51,16 @@ public class Write {
 //        Map<Integer,ServerInfo> map_ServerInfo = new HashMap<>();
 
 //        Integer server_id = 0;
-
-        for (i = 0; i < list_operation.size(); i++) {
+//        long time1 = 0, time2 = 0, time3 = 0, time4 = 0;
+        int list1 = list_operation.size();
+        for (i = 0; i < list1; i++) {
             list_by_day = list_operation.get(i);
-//            System.out.println("第"+i+"天");
+            System.out.println("第"+(i+1)+"天");
 
+            int list2 = list_by_day.size();
 
             //i代表第几天 j代表第几个操作
-            for (j = 0; j < list_by_day.size(); j++) {
+            for (j = 0; j < list2; j++) {
 
                 VmInfo vmInfo = new VmInfo();
                 //判断是add还是del
@@ -209,16 +212,15 @@ public class Write {
             /**
              * 先判断第i天是否购买了服务器,若买了则买 server_num_now 台
              */
-            int server_num_now = serverInfo.length - server_num;
-            server_num =serverInfo.length;
+            int server_num_now = server_id - server_num;
+            server_num = server_id;
             if(server_num_now == 0){
                 System.out.println("(purchase,0)");
             }else{
                 System.out.println("(purchase,1)");
-                System.out.println("(hostW1Q5U," + server_num_now + ")");
+                System.out.println("(host78K52," + server_num_now + ")");
             }
             System.out.println("(migration,0)");
-
 
             /**
              * 遍历vm_server获得server_id和node
@@ -235,24 +237,23 @@ public class Write {
                     System.out.println("(" + id + ",B)");
                 }
             }
-
             vm_num = map_vmInfo.size();
-//            /**
-//             * 在执行完每日的操作后，对每日的输出进行计算
-//             */
-//            int day = 0;
-//            for (Map.Entry<Integer, ServerInfo> entry : map_ServerInfo.entrySet()){
-//                if(entry.getValue().getStatus()){
-//                    day++;
-//                }
-//            }
-//            cost_energy_day = day * 224;
-
+            /**
+             * 在执行完每日的操作后，对每日的输出进行计算
+             */
+            int day = 0;
+            for (int l = 0; l < server_id; l++){
+                if(serverInfo[l].getStatus()){
+                    day++;
+                }
+            }
+            cost_energy_day = day * map_server.get(serverInfo[0].getServer_name()).getCost_energy();
+            cost_energy_all += cost_energy_day;
         }
-//        cost_energy_all += cost_energy_day;
-//        cost_hardware = map_ServerInfo.size() * 179861;
-//        cost_all = cost_energy_all + cost_hardware;
-//        System.out.println(cost_all);
+
+        cost_hardware = server_id * map_server.get(serverInfo[0].getServer_name()).getCost_hardware();
+        cost_all = cost_energy_all + cost_hardware;
+        System.out.println(cost_all);
 
 
     }
@@ -272,7 +273,7 @@ public class Write {
      */
     public static void BuyServer() throws IOException{
 
-        Map<String,Server> map_server = ReadServer();
+
         ServerInfo server = new ServerInfo();
         //暂时默认买第一种服务器
         server.setServer_name(map_server.keySet().iterator().next());
@@ -281,28 +282,13 @@ public class Write {
         server.setA_memory(map_server.get(map_server.keySet().iterator().next()).getMemory() / 2);
         server.setB_cpu_core(map_server.get(map_server.keySet().iterator().next()).getCpu_core() / 2);
         server.setB_memory(map_server.get(map_server.keySet().iterator().next()).getMemory() / 2);
-        server.setStatus(false);//默认没有开启使用
+        server.setStatus(true);//默认没有开启使用
 
         serverInfo[server_id] = server;
         server_id++;
 
     }
 
-
-    /**
-     * 虚拟机为双节点部署
-     */
-    public static void ArrangeByDouble(){
-
-    }
-
-
-    /**
-     * 虚拟机为单节点部署
-     */
-    public static void ArrangeBySingle(){
-
-    }
 }
 
 
