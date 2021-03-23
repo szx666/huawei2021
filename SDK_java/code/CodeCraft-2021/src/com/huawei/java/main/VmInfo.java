@@ -1,4 +1,4 @@
-package model;
+package com.huawei.java.main;
 
 /**
  * 现有虚拟机信息

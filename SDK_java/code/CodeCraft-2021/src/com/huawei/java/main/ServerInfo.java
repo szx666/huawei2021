@@ -1,4 +1,4 @@
-package model;
+package com.huawei.java.main;
 
 /**
  * 现有服务器信息

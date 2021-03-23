@@ -1,8 +1,7 @@
-package model;
+package com.huawei.java.main;
 
 
 
-import javax.print.StreamPrintServiceFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +14,116 @@ import java.util.*;
 public class Read {
 
     public final static String path = "C:\\Users\\11931\\Desktop\\华为软挑\\training-2.txt";
+    //public static List lines = new ArrayList();
+    /**
+     * 读取服务器传来的信息
+     * @return map
+     * @throws
+     */
+    public static List Read1(){
+        //服务器上读取数据方式
 
+        Scanner scanner = new Scanner(System.in);
+
+        //服务器种类
+        int kinds_server = Integer.parseInt(scanner.nextLine());
+        Server1[] server1s = new Server1[kinds_server];
+
+        Map<String,Server> map_server = new HashMap<String,Server>(kinds_server);
+
+        for(int i = 0; i < kinds_server; i++){
+            Server1 server1 = new Server1();
+            String string = (String)(scanner.nextLine());
+            String subString = string.substring(1,string.length() - 1);
+            String[] splitString = subString.split(",");
+            server1.setServer_name(splitString[0]);
+            server1.setCpu_core(Integer.parseInt(splitString[1].trim()));
+            server1.setMemory(Integer.parseInt(splitString[2].trim()));
+            server1.setCost_hardware(Integer.parseInt(splitString[3].trim()));
+            server1.setCost_energy(Integer.parseInt(splitString[4].trim()));
+            server1s[i] = server1;
+        }
+        Arrays.sort(server1s);
+        //存服务器数据
+
+        for(int j = 0; j < kinds_server; j++){
+            Server server = new Server();
+            server.setCpu_core(server1s[j].getCpu_core());
+            server.setMemory(server1s[j].getMemory());
+            server.setCost_hardware(server1s[j].getCost_hardware());
+            server.setCost_energy(server1s[j].getCost_energy());
+            map_server.put(server1s[j].getServer_name(),server);
+        }
+//        return map_server;
+        //虚拟机种类
+        int kinds_vm = Integer.parseInt(scanner.nextLine());
+        Map<String,Vm> map_vm = new HashMap<>();
+        //向map_vm中存虚拟机数据
+        for(int j = 0; j < kinds_vm; j++){
+            Vm vm = new Vm();
+            String string = (String)(scanner.nextLine());
+            String subString = string.substring(1,string.length() - 1);
+            String[] splitString = subString.split(",");
+            //vm.setVm_name(splitString[0]);
+            vm.setVm_cpu_core(Integer.parseInt(splitString[1].trim()));
+            vm.setVm_memory(Integer.parseInt(splitString[2].trim()));
+            vm.setDouble_node(Integer.parseInt(splitString[3].trim()));
+            map_vm.put(splitString[0],vm);
+        }
+
+
+        //获取操作天数
+        int num_operation_day = Integer.parseInt(scanner.nextLine());
+        //数组索引从0开始，一共操作天数个
+        int[] num_operation = new int[num_operation_day + 1];
+        num_operation[0] = 0;
+
+        //用来存储所有天操作的list
+        List<List<Operation>> list_operation = new ArrayList<List<Operation>>(num_operation_day);
+
+        int total = 0;
+        /**
+         * 从获得操作天数后需要进行一个两重for循环将数据存入list中
+         */
+        for(int i = 0; i < num_operation_day; i++){
+
+            //获取第一天操作命令的数量
+            total = total + num_operation[i];
+            num_operation[i + 1] = Integer.parseInt(scanner.nextLine());
+            //用来储存每一天操作的list
+            List<Operation> list_by_day = new ArrayList<Operation>();
+            for(int j = 0; j < num_operation[i + 1] ; j++){
+
+
+                Operation op = new Operation();
+                String string = (String)(scanner.nextLine());
+                String subString = string.substring(1,string.length() - 1);
+                String[] splitString = subString.split(",");
+                if(splitString[0].equals("add")){
+                    op.setOperation_name(splitString[0]);
+                    op.setVm_name(splitString[1].substring(1,splitString[1].length()));
+                    op.setVm_id(Integer.parseInt(splitString[2].substring(1,splitString[2].length()).trim()));//去掉数据中的空格
+                    list_by_day.add(op);
+                }else {
+                    op.setOperation_name(splitString[0]);
+                    op.setVm_name(null);
+                    op.setVm_id(Integer.parseInt(splitString[1].substring(1,splitString[1].length()).trim()));
+                    list_by_day.add(op);
+                }
+
+            }
+            list_operation.add(list_by_day);
+
+        }
+        scanner.close();
+        List list = new ArrayList();
+        list.add(map_server);
+        list.add(map_vm);
+        list.add(list_operation);
+        return list;
+
+
+    }
     /**
      * 读取服务器信息
      * @return map
@@ -32,9 +140,9 @@ public class Read {
         Server1[] server1s = new Server1[kinds_server];
 
         Map<String,Server> map = new HashMap<String,Server>(kinds_server);
-        Server1 server1 = new Server1();
-        for(int i = 0; i < kinds_server; i++){
 
+        for(int i = 0; i < kinds_server; i++){
+            Server1 server1 = new Server1();
             String string = (String) lines.get(i + 1);
             String subString = string.substring(1,string.length() - 1);
             String[] splitString = subString.split(",");
@@ -47,8 +155,9 @@ public class Read {
         }
         Arrays.sort(server1s);
         //存服务器数据
-        Server server = new Server();
+
         for(int j = 0; j < kinds_server; j++){
+            Server server = new Server();
 //            server.setServer_name(splitString[0]);
             server.setCpu_core(server1s[j].getCpu_core());
             server.setMemory(server1s[j].getMemory());
@@ -169,17 +278,4 @@ public class Read {
     }
 
 
-
-    /**
-     * 3月12日完成读取输入
-     */
-    public static void main(String[] args) throws Exception{
-
-//        Map<String,Server> map_server = ReadServer();
-//        Map<String,Vm> map_vm = ReadVm();
-//        List<List<Operation>> list_operation = ReadOperation();
-
-        Write.OperationByDay();
-
-    }
 }

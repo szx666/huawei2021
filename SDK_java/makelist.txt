@@ -1,0 +1,10 @@
+com/huawei/java/main/Main.java
+com/huawei/java/main/Operation.java
+com/huawei/java/main/Read.java
+com/huawei/java/main/Server.java
+com/huawei/java/main/Server1.java
+com/huawei/java/main/ServerInfo.java
+com/huawei/java/main/Vm.java
+com/huawei/java/main/vm_server.java
+com/huawei/java/main/VmInfo.java
+com/huawei/java/main/Write.java

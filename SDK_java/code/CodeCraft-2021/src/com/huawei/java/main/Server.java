@@ -1,11 +1,12 @@
-package model;
+package com.huawei.java.main;
 
 /**
- * 排序list的实体类
+ * 服务器类
  */
-public class Server1 implements Comparable<Server1>{
+public class Server {
+
     //型号作为key存入map
-    private String server_name;
+    //private String server_name;
 
     private int cpu_core;
 
@@ -15,13 +16,13 @@ public class Server1 implements Comparable<Server1>{
 
     private int cost_energy;
 
-    public String getServer_name() {
-        return server_name;
-    }
-
-    public void setServer_name(String server_name) {
-        this.server_name = server_name;
-    }
+//    public String getServer_name() {
+//        return server_name;
+//    }
+//
+//    public void setServer_name(String server_name) {
+//        this.server_name = server_name;
+//    }
 
     public int getCpu_core() {
         return cpu_core;
@@ -53,10 +54,5 @@ public class Server1 implements Comparable<Server1>{
 
     public void setCost_energy(int cost_energy) {
         this.cost_energy = cost_energy;
-    }
-
-    @Override
-    public int compareTo(Server1 server1) {           //重写Comparable接口的compareTo方法，
-        return this.cost_hardware - server1.getCost_hardware();         //根据生成随机数升序排列，降序修改相减顺序即可
     }
 }

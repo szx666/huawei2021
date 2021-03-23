@@ -1,4 +1,4 @@
-package model;
+package com.huawei.java.main;
 
 public class vm_server {
     //所在服务器id
