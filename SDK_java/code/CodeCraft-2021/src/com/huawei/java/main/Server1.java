@@ -59,4 +59,9 @@ public class Server1 implements Comparable<Server1>{
     public int compareTo(Server1 server1) {           //重写Comparable接口的compareTo方法，
         return this.cost_hardware - server1.getCost_hardware();         //根据生成随机数升序排列，降序修改相减顺序即可
     }
+//    @Override
+//    public int compareTo(Server1 server1) {           //重写Comparable接口的compareTo方法，
+//        return this.cost_energy - server1.getCost_energy();         //根据生成随机数升序排列，降序修改相减顺序即可
+//    }
+
 }

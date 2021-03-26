@@ -17,7 +17,9 @@ public class ServerInfo {
 
     private int B_memory;
 
-    private Boolean status;
+//    private Boolean status;
+
+    private int vm_num;
 
 //    public String getServer_id() {
 //        return server_id;
@@ -67,11 +69,19 @@ public class ServerInfo {
         B_memory = b_memory;
     }
 
-    public Boolean getStatus() {
-        return status;
+//    public Boolean getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(Boolean status) {
+//        this.status = status;
+//    }
+
+    public int getVm_num() {
+        return vm_num;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public void setVm_num(int vm_num) {
+        this.vm_num = vm_num;
     }
 }
