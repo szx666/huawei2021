@@ -11,12 +11,19 @@ import java.util.Map;
 
 public class Write {
     //设置全局Map
-    public static ServerInfo[] serverInfo = new ServerInfo[20000];
+    public static ServerInfo[] serverInfo = new ServerInfo[100000];
     //public static Map<Integer, ServerInfo> map_ServerInfo = new HashMap<>();
     public static Map<Integer, VmInfo> map_vmInfo = new HashMap<>();
     public static Map<String,Server> map_server = new HashMap<>();
     public static Map<String,Vm> map_vm = new HashMap<>();
-    public static List<List<Operation>> list_operation = new ArrayList<List<Operation>>();;
+    public static List<List<Operation>> list_operation = new ArrayList<List<Operation>>();
+    public static List<Server1> list_server = new ArrayList<>();
+    //存放已买服务器型号及对应id的Map，用于id重映射
+//    public static List<Integer> list_id = new ArrayList<>();
+//    public static Map<String,List<Integer>> map_purchase = new HashMap<>();
+    public static int[] map = new int[100000];
+    public static Integer index = 0;
+
 
     public static Integer server_id = 0;
     //public static Integer vm_id = 0;
@@ -39,12 +46,14 @@ public class Write {
         int vm_num = 0;
 
         int i, j, num, m, n;
-        List list = Read.Read1();
-        map_server = (Map<String,Server>)list.get(0);
-        map_vm = (Map<String,Vm>)list.get(1);
-        list_operation = (List<List<Operation>>)list.get(2);
+        List list_1 = Read.Read1();
+        map_server = (Map<String,Server>)list_1.get(0);
+        map_vm = (Map<String,Vm>)list_1.get(1);
+        list_operation = (List<List<Operation>>)list_1.get(2);
+        list_server = (List<Server1>)list_1.get(3);
 //        //本地读取数据
-//        map_server = Read.ReadServer();
+//        map_server = (Map<String,Server>)Read.ReadServer().get(0);
+//        list_server = (List<Server1>)Read.ReadServer().get(1);
 //        map_vm = Read.ReadVm();
 //        list_operation = Read.ReadOperation();
 
@@ -61,18 +70,19 @@ public class Write {
 //        Map<Integer,ServerInfo> map_ServerInfo = new HashMap<>();
 
 //        Integer server_id = 0;
-//        long time1 = 0, time2 = 0, time3 = 0, time4 = 0;
-        BuyServer();
+
+//        BuyServer();
         int list1 = list_operation.size();
         for (i = 0; i < list1; i++) {
             list_by_day = list_operation.get(i);
 //            System.out.println("第"+(i+1)+"天");
 
             int list2 = list_by_day.size();
-
+            Map<String,List<Integer>> map_purchase = new HashMap<>();//每天更新储存服务器型号及类别的Map
             //i代表第几天 j代表第几个操作
             for (j = 0; j < list2; j++) {
                 VmInfo vmInfo = new VmInfo();
+
                 //判断是add还是del
                 //add的话对照虚拟机vm型号判断是单节点部署还是双节点部署
                 //判断当前有没有可供部署的服务器，如果没有的话就要购买服务器进行增加，同时还要记录是第i天增加的
@@ -109,7 +119,19 @@ public class Write {
                          */
                         if (vmInfo.getServer_id() == 0) {
                             //如果没有服务器满足条件则购买
-                            BuyServer();
+                            BuyServer(cpu_core,memory);
+
+                            //重映射操作
+                            //如果原来没有买这个型号的服务器 map_purchase中存储的id没有多一个
+                            if(map_purchase.get(serverInfo[server_id - 1].getServer_name())== null || map_purchase.get(serverInfo[server_id - 1].getServer_name()).isEmpty()){
+                                List<Integer> list = new ArrayList<>();
+                                list.add(server_id - 1);
+                                map_purchase.put(serverInfo[server_id - 1].getServer_name(),list);
+                            }else{
+                                List<Integer> list = map_purchase.get(serverInfo[server_id - 1].getServer_name());
+                                list.add(server_id - 1);
+                                map_purchase.put(serverInfo[server_id - 1].getServer_name(),list);
+                            }
                             serverInfo[server_id - 1].setA_cpu_core(serverInfo[server_id - 1].getA_cpu_core() - cpu_core);
                             serverInfo[server_id - 1].setB_cpu_core(serverInfo[server_id - 1].getB_cpu_core() - cpu_core);
                             serverInfo[server_id - 1].setA_memory(serverInfo[server_id - 1].getA_memory() - memory);
@@ -148,7 +170,18 @@ public class Write {
                         }
                         if (vmInfo.getServer_id() == 0) {
                             //如果没有服务器满足条件则购买
-                            BuyServer();
+                            BuyServer(cpu_core,memory);
+                            //重映射操作
+                            //如果原来没有买这个型号的服务器 map_purchase中存储的id没有多一个
+                            if(map_purchase.get(serverInfo[server_id - 1].getServer_name())== null || map_purchase.get(serverInfo[server_id - 1].getServer_name()).isEmpty()){
+                                List<Integer> list = new ArrayList<>();
+                                list.add(server_id - 1);
+                                map_purchase.put(serverInfo[server_id - 1].getServer_name(),list);
+                            }else{
+                                List<Integer> list = map_purchase.get(serverInfo[server_id - 1].getServer_name());
+                                list.add(server_id - 1);
+                                map_purchase.put(serverInfo[server_id - 1].getServer_name(),list);
+                            }
                             //若新买服务器默认放A节点
                             serverInfo[server_id - 1].setA_cpu_core(serverInfo[server_id - 1].getA_cpu_core() - cpu_core);
                             serverInfo[server_id - 1].setA_memory(serverInfo[server_id - 1].getA_memory() - memory);
@@ -218,14 +251,30 @@ public class Write {
             /**
              * 先判断第i天是否购买了服务器,若买了则买 server_num_now 台
              */
-            int server_num_now = server_id - server_num;
-            server_num = server_id;
-            if(server_num_now == 0){
-                System.out.println("(purchase, 0)");
-            }else{
-                System.out.println("(purchase, 1)");
-                System.out.println("(" + serverInfo[0].getServer_name() + ", " + server_num_now + ")");
+//            int server_num_now = server_id - server_num;
+//            server_num = server_id;
+//            if(server_num_now == 0){
+//                System.out.println("(purchase, 0)");
+//            }else{
+//                System.out.println("(purchase, " + map_purchase.size() + ")");
+//                System.out.println("(" + serverInfo[0].getServer_name() + ", " + server_num_now + ")");
+//            }
+            /**
+             * 购买服务器
+             */
+            System.out.println("(purchase, " + map_purchase.size() + ")");
+            for(Map.Entry entry : map_purchase.entrySet()) {
+                List<Integer> server_amount = (List<Integer>)entry.getValue();
+                System.out.println("(" + entry.getKey() + ", " + server_amount.size() + ")");
+                for(int h = 0; h < server_amount.size(); h++){
+                    map[server_amount.get(h)] = index++;
+                }
             }
+            //需要按顺序输出id和node
+
+            /**
+             * 迁移
+             */
             System.out.println("(migration, 0)");
 
             /**
@@ -234,12 +283,13 @@ public class Write {
             for(num = vm_num; num < map_vmInfo.size(); num++ ){
                 int id = vm_server.get(num).getServer_id() - 1;
                 String node = vm_server.get(num).getNode();
+                int true_id = map[id];//重映射后的id
                 if(node == null || node.isEmpty()){
-                    System.out.println("(" + id + ")");
+                    System.out.println("(" + true_id + ")");
                 }else if(node.equals("A")){
-                    System.out.println("(" + id + ", A)");
+                    System.out.println("(" + true_id + ", A)");
                 }else{
-                    System.out.println("(" + id + ", B)");
+                    System.out.println("(" + true_id + ", B)");
                 }
             }
             vm_num = map_vmInfo.size();
@@ -276,7 +326,7 @@ public class Write {
     /**
      * 购买服务器策略
      */
-    public static void BuyServer() throws IOException{
+    public static void BuyServer(){
 
 
         ServerInfo server = new ServerInfo();
@@ -294,6 +344,28 @@ public class Write {
 
     }
 
+    /**
+     * 购买服务器策略(满足条件的服务器按硬件成本由低到高排序)
+     */
+    public static void BuyServer(int cpu_core, int memory){
+        ServerInfo server = new ServerInfo();
+        for(int i = 0; i < list_server.size(); i++){
+            if(list_server.get(i).getCpu_core() / 2 >= cpu_core && list_server.get(i).getMemory() / 2 >= memory){
+                server.setServer_name(list_server.get(i).getServer_name());
+                server.setA_cpu_core(list_server.get(i).getCpu_core() / 2);
+                server.setA_memory(list_server.get(i).getMemory() / 2);
+                server.setB_cpu_core(list_server.get(i).getCpu_core() / 2);
+                server.setB_memory(list_server.get(i).getMemory() / 2);
+                server.setStatus(true);
+                break;
+            }
+        }
+
+        
+        serverInfo[server_id] = server;
+        server_id++;
+
+    }
 
 
 }

@@ -28,6 +28,7 @@ public class Read {
         //服务器种类
         int kinds_server = Integer.parseInt(scanner.nextLine());
         Server1[] server1s = new Server1[kinds_server];
+        List<Server1> list_server = new ArrayList<>();
 
         Map<String,Server> map_server = new HashMap<String,Server>(kinds_server);
 
@@ -42,9 +43,12 @@ public class Read {
             server1.setCost_hardware(Integer.parseInt(splitString[3].trim()));
             server1.setCost_energy(Integer.parseInt(splitString[4].trim()));
             server1s[i] = server1;
+            list_server.add(server1);
         }
         Arrays.sort(server1s);
         //存服务器数据
+        Collections.sort(list_server);
+
 
         for(int j = 0; j < kinds_server; j++){
             Server server = new Server();
@@ -120,6 +124,7 @@ public class Read {
         list.add(map_server);
         list.add(map_vm);
         list.add(list_operation);
+        list.add(list_server);
         return list;
 
 
@@ -129,7 +134,9 @@ public class Read {
      * @return map
      * @throws IOException
      */
-    public static Map<String,Server> ReadServer() throws IOException {
+    public static List ReadServer() throws IOException {
+
+        List list = new ArrayList();
         Path path = Paths.get(Read.path);
 
         List lines = Files.readAllLines(path);
@@ -140,6 +147,8 @@ public class Read {
         Server1[] server1s = new Server1[kinds_server];
 
         Map<String,Server> map = new HashMap<String,Server>(kinds_server);
+
+        List<Server1> list_server = new ArrayList<>();
 
         for(int i = 0; i < kinds_server; i++){
             Server1 server1 = new Server1();
@@ -152,8 +161,11 @@ public class Read {
             server1.setCost_hardware(Integer.parseInt(splitString[3].trim()));
             server1.setCost_energy(Integer.parseInt(splitString[4].trim()));
             server1s[i] = server1;
+            list_server.add(server1);
+
         }
         Arrays.sort(server1s);
+        Collections.sort(list_server);//按硬件成本从小到大排列
         //存服务器数据
 
         for(int j = 0; j < kinds_server; j++){
@@ -165,8 +177,10 @@ public class Read {
             server.setCost_energy(server1s[j].getCost_energy());
             map.put(server1s[j].getServer_name(),server);
         }
+        list.add(map);
+        list.add(list_server);
 
-        return map;
+        return list;
     }
 
     /**
