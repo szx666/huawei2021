@@ -72,6 +72,15 @@ public class Write {
 //        Integer server_id = 0;
 
 //        BuyServer();
+        //评价函数相关变量
+        int score_cpu = 0;
+        int score_mem = 0;
+        int score_cpu_A = 0;
+        int score_mem_A = 0;
+        int score_cpu_B = 0;
+        int score_mem_B = 0;
+        int score = 0;
+
         int list1 = list_operation.size();
         for (i = 0; i < list1; i++) {
             list_by_day = list_operation.get(i);
@@ -113,9 +122,7 @@ public class Write {
                             /**
                              * 根据cpu和mem设置评价函数选择放置虚拟机的服务器
                              */
-                            int score_cpu = 0;
-                            int score_mem = 0;
-                            int score = 0;
+
 
                             //选取双节点服务器中容量小的那个节点作为评判指标
                             if (serverInfo[m].getA_cpu_core() >= serverInfo[m].getB_cpu_core()) {
@@ -129,7 +136,7 @@ public class Write {
                                 score_mem = serverInfo[m].getA_memory();
                             }
                             if (score_cpu >= cpu_core && score_mem >= memory) {
-                                score = 2 * (score_cpu - cpu_core) * (score_cpu - cpu_core) + (score_mem - memory) * (score_mem - memory);
+                                score = 4 * (score_cpu - cpu_core) * (score_cpu - cpu_core) + (score_mem - memory) * (score_mem - memory);
                                 array_score[m] = score;
                             }
 
@@ -209,11 +216,7 @@ public class Write {
                             /**
                              * 根据cpu和mem设置评价函数选择放置虚拟机的服务器
                              */
-                            int score_cpu_A = 0;
-                            int score_mem_A = 0;
-                            int score_cpu_B = 0;
-                            int score_mem_B = 0;
-                            int score = 0;
+
 
                             score_cpu_A = serverInfo[n].getA_cpu_core();
                             score_mem_A = serverInfo[n].getA_memory();
@@ -221,10 +224,10 @@ public class Write {
                             score_mem_B = serverInfo[n].getB_memory();
 
                             if (score_cpu_A >= cpu_core && score_mem_A >= memory) {
-                                score = 2 * (score_cpu_A - cpu_core) * (score_cpu_A - cpu_core) + (score_mem_A - memory) * (score_mem_A - memory);
+                                score = 4 * (score_cpu_A - cpu_core) * (score_cpu_A - cpu_core) + (score_mem_A - memory) * (score_mem_A - memory);
                                 array_score[n] = score;
                             } else if(score_cpu_B >= cpu_core && score_mem_B >= memory){
-                                score = 2 * (score_cpu_B - cpu_core) * (score_cpu_B - cpu_core) + (score_mem_B - memory) * (score_mem_B - memory);
+                                score = 4 * (score_cpu_B - cpu_core) * (score_cpu_B - cpu_core) + (score_mem_B - memory) * (score_mem_B - memory);
                                 array_score_B[n] = score;
 
                             }
