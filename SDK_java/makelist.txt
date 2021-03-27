@@ -8,3 +8,5 @@ com/huawei/java/main/Vm.java
 com/huawei/java/main/vm_server.java
 com/huawei/java/main/VmInfo.java
 com/huawei/java/main/Write.java
+com/huawei/java/main/mig.java
+com/huawei/java/main/MigInfo.java
