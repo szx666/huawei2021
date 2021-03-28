@@ -33,5 +33,13 @@
     - 其次加上每个服务器的内核和内存情况，当有新的虚拟机请求时首先遍历已有的服务器负载序列，如果没有满足的服务器再购买新的服务器
 
 ### 3月12日 
-完成读取文本输入部分
-    
+#### 完成读取文本输入部分
+
+``` java
+String path = "C:\\Users\\11931\\Desktop\\华为软挑\\training-1.txt";
+Path path = Paths.get(Read.path);
+List lines = Files.readAllLines(path);
+```
+
+#### 发现问题  
+每次向list中存入实体类或list时，都是存入一个类似于指针的地址，如果采用循环存储，每次必须重新new一个对象，不能使用clear()，否则会导致存入的值都一样
