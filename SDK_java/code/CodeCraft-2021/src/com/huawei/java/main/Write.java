@@ -137,7 +137,7 @@ public class Write {
                                 score_mem = serverInfo[m].getA_memory();
                             }
                             if (score_cpu >= cpu_core && score_mem >= memory) {
-                                score = 4 * (score_cpu - cpu_core) * (score_cpu - cpu_core) + (score_mem - memory) * (score_mem - memory);
+                                score = 5 * (score_cpu - cpu_core) * (score_cpu - cpu_core) + (score_mem - memory) * (score_mem - memory);
                                 array_score[m] = score;
                             }
 
@@ -209,10 +209,10 @@ public class Write {
                             score_mem_B = serverInfo[n].getB_memory();
 
                             if (score_cpu_A >= cpu_core && score_mem_A >= memory) {
-                                score = 4 * (score_cpu_A - cpu_core) * (score_cpu_A - cpu_core) + (score_mem_A - memory) * (score_mem_A - memory);
+                                score = 5 * (score_cpu_A - cpu_core) * (score_cpu_A - cpu_core) + (score_mem_A - memory) * (score_mem_A - memory);
                                 array_score[n] = score;
                             } else if(score_cpu_B >= cpu_core && score_mem_B >= memory){
-                                score = 4 * (score_cpu_B - cpu_core) * (score_cpu_B - cpu_core) + (score_mem_B - memory) * (score_mem_B - memory);
+                                score = 5 * (score_cpu_B - cpu_core) * (score_cpu_B - cpu_core) + (score_mem_B - memory) * (score_mem_B - memory);
                                 array_score_B[n] = score;
 
                             }
@@ -434,7 +434,7 @@ public class Write {
                 }
                 if(vm_amount_bynow < vm_amount_day * 5 / 1000){
                 label: //while(vm_amount_bynow < vm_amount_day * 5 / 1000){
-                    for(int y = 0; y < list_mig.size(); y++){ //遍历到第y个服务器 按照服务器所存剩余虚拟机的数量由低到高遍历
+                    for(int y = 0; y < list_mig.size() / 10; y++){ //遍历到第y个服务器 按照服务器所存剩余虚拟机的数量由低到高遍历
                         int after_id = list_mig.get(y).getServer_id(); //获取服务器id
                         List<Integer> list_use = list_server_vm.get(after_id); //获取所含虚拟机id列表
                         for(int z = 0; z < list_use.size(); z++){ //迁移的虚拟机数量
@@ -453,7 +453,7 @@ public class Write {
                                 int memory = vm_mem / 2;
 
                                 //将虚拟机往后面放
-                                for (int b = y + 1; b < list_mig.size(); b++) {
+                                for (int b = y + 1; b < list_mig.size() / 10; b++) {
                                     int after_id_1 = list_mig.get(b).getServer_id(); //除了虚拟机原来在的服务器外，由低到高遍历剩余虚拟机,获得的是正常顺序的服务器id
                                     //选取双节点服务器中容量小的那个节点作为评判指标
                                     if (serverInfo[after_id_1].getA_cpu_core() >= serverInfo[after_id_1].getB_cpu_core()) {
@@ -467,7 +467,7 @@ public class Write {
                                         score_mem = serverInfo[after_id_1].getA_memory();
                                     }
                                     if (score_cpu >= cpu_core && score_mem >= memory) {
-                                        score = 4 * (score_cpu - cpu_core) * (score_cpu - cpu_core) + (score_mem - memory) * (score_mem - memory);
+                                        score = 5 * (score_cpu - cpu_core) * (score_cpu - cpu_core) + (score_mem - memory) * (score_mem - memory);
                                         array_score_mig[b] = score;
                                     }
                                 }
@@ -514,11 +514,11 @@ public class Write {
                                     vm_amount_bynow++;
 
                                 }
-                            if(vm_amount_bynow >= vm_amount_day * 2 / 1000 || i > 300){
+                            if(vm_amount_bynow >= vm_amount_day * 2 / 1000 || i > 700){
                                 break label;
                             }
                             }
-                        if(vm_amount_bynow >= vm_amount_day * 2 / 1000 || i > 300){
+                        if(vm_amount_bynow >= vm_amount_day * 2 / 1000 || i > 700){
                                 break label;
                             }
                         }

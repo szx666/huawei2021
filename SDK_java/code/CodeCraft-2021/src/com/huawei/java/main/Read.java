@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class Read {
 
-    public final static String path = "C:\\Users\\11931\\Desktop\\华为软挑\\training-2.txt";
+    public final static String path = "C:\\Users\\11931\\Desktop\\华为软挑\\training-1.txt";
     //public static List lines = new ArrayList();
     /**
      * 读取服务器传来的信息
@@ -138,7 +138,6 @@ public class Read {
 
         List list = new ArrayList();
         Path path = Paths.get(Read.path);
-
         List lines = Files.readAllLines(path);
 
         //80 800
